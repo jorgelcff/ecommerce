@@ -7,10 +7,16 @@ import {
   Param,
   Delete,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+
+export class CreateCartProductDto {
+  productId: string;
+  quantity: number;
+}
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('cart')
@@ -48,5 +54,18 @@ export class CartController {
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string) {
     return this.cartService.findByUser(userId);
+  }
+
+  @Post(':userId/items')
+  addProduct(
+    @Body() addProductDto: CreateCartProductDto,
+    @Param('userId') userId: string,
+  ) {
+    return this.cartService.addProductToCart(addProductDto, userId);
+  }
+
+  @Post(':cartId/checkout')
+  checkout(@Param('cartId') cartId: string, @Body() data: { address: string }) {
+    return this.cartService.checkout(cartId, data.address);
   }
 }

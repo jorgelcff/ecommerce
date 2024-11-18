@@ -121,7 +121,7 @@ export class OrderService {
   async updateByAdminStatus(
     adminId: string,
     orderId: string,
-    status: Prisma.EnumOrderStatusFieldUpdateOperationsInput,
+    status: 'PENDING' | 'COMPLETED' | 'CANCELED', // Use o tipo de enum diretamente
   ) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -137,11 +137,33 @@ export class OrderService {
       throw new ForbiddenException(`User with ID ${adminId} is not an admin`);
     }
 
-    return await this.prisma.order.update({
+    const order = await this.prisma.order.update({
       where: { id: orderId },
       data: {
-        status,
+        status: status,
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
+    if (status === 'COMPLETED') {
+      for (const orderProduct of order.products) {
+        console.log(orderProduct);
+        await this.prisma.product.update({
+          where: { id: orderProduct.productId },
+          data: {
+            stock: {
+              decrement: orderProduct.quantity,
+            },
+          },
+        });
+      }
+    }
+
+    return order;
   }
 }

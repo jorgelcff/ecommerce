@@ -72,7 +72,7 @@ export class OrderController {
   updateByAdminStatus(
     @Param('adminId') adminId: string,
     @Param('orderId') orderId: string,
-    @Body('status') status: Prisma.EnumOrderStatusFieldUpdateOperationsInput,
+    @Body('status') status: 'PENDING' | 'COMPLETED' | 'CANCELED',
   ) {
     return this.orderService.updateByAdminStatus(adminId, orderId, status);
   }

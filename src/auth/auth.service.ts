@@ -55,8 +55,19 @@ export class AuthService {
         },
       });
 
-      delete user.password; // Remove a senha do retorno
-      return user;
+      if (user.role == 'USER') {
+        await this.prisma.cart.create({
+          data: {
+            user: {
+              connect: { id: user.id },
+            },
+          },
+        });
+      }
+
+      const login = this.login(user.email, data.password);
+
+      return login;
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
