@@ -166,4 +166,46 @@ export class OrderService {
 
     return order;
   }
+
+  async ordersPending() {
+    const pendingOrders = await this.prisma.order.count({
+      where: {
+        status: 'PENDING',
+      },
+    });
+    return pendingOrders;
+  }
+
+  async ordersCompleted() {
+    const completedOrders = await this.prisma.order.count({
+      where: {
+        status: 'COMPLETED',
+      },
+    });
+    return completedOrders;
+  }
+
+  async ordersValue() {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        status: 'COMPLETED',
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    let totalValue = 0;
+    for (const order of orders) {
+      for (const orderProduct of order.products) {
+        totalValue += orderProduct.product.price * orderProduct.quantity;
+      }
+    }
+
+    return totalValue;
+  }
 }

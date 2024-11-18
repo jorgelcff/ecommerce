@@ -11,11 +11,15 @@ import {
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+import { OrderService } from 'src/order/order.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly orderService: OrderService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: Prisma.UserCreateInput) {
@@ -43,5 +47,10 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  @Get('/dashboard/:userID')
+  getDashboardData(@Param('userID') userID: string) {
+    return this.userService.getDashboardData(userID);
   }
 }

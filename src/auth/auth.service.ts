@@ -8,12 +8,16 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '@prisma/client'; // Importe o enum Role
+import { UserService } from 'src/user/user.service';
+import { OrderService } from 'src/order/order.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly orderService: OrderService,
   ) {}
 
   /**
@@ -95,7 +99,23 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
 
     delete user.password; // Remove a senha do retorno
-    return { user: user, access_token: token };
+
+    let dashboard = null;
+
+    if (user.role == 'ADMIN') {
+      const totalUsers = await this.userService.getTotalUsers();
+      const totalOrdersCompleted = await this.orderService.ordersCompleted();
+      const totalOrdersPending = await this.orderService.ordersPending();
+      const totalSales = await this.orderService.ordersValue();
+
+      dashboard = {
+        totalUsers,
+        totalOrdersCompleted,
+        totalOrdersPending,
+        totalSales,
+      };
+    }
+    return { user: user, access_token: token, dashboard: dashboard };
   }
 
   /**
