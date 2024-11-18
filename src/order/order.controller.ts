@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Prisma } from '@prisma/client';
@@ -43,5 +44,36 @@ export class OrderController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.orderService.remove(id);
+  }
+
+  @Get('admin/:adminId')
+  findByAdmin(@Param('adminId') adminId: string) {
+    return this.orderService.findByAdmin(adminId);
+  }
+
+  @Delete('admin/:adminId/:orderId')
+  deleteByAdmin(
+    @Param('adminId') adminId: string,
+    @Param('orderId') orderId: string,
+  ) {
+    return this.orderService.deleteByAdmin(adminId, orderId);
+  }
+
+  @Put('admin/:adminId/:orderId')
+  updateByAdmin(
+    @Param('adminId') adminId: string,
+    @Param('orderId') orderId: string,
+    @Body() updateOrderDto: Prisma.OrderUpdateInput,
+  ) {
+    return this.orderService.updateByAdmin(adminId, orderId, updateOrderDto);
+  }
+
+  @Put('admin/:adminId/:orderId/status')
+  updateByAdminStatus(
+    @Param('adminId') adminId: string,
+    @Param('orderId') orderId: string,
+    @Body('status') status: Prisma.EnumOrderStatusFieldUpdateOperationsInput,
+  ) {
+    return this.orderService.updateByAdminStatus(adminId, orderId, status);
   }
 }

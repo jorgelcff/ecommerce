@@ -34,4 +34,34 @@ export class CartService {
       where: { id },
     });
   }
+
+  async findByUser(userId: string) {
+    const cart = await this.prisma.cart.findFirst({
+      where: {
+        userId,
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    const orders = await this.prisma.order.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    return { cart, orders };
+  }
 }

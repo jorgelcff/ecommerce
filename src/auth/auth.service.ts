@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Role } from '@prisma/client'; // Importe o enum Role
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,12 @@ export class AuthService {
 
       // Cria o usuário
       const user = await this.prisma.user.create({
-        data: { ...data, password: hashedPassword, telefone: data.telefone },
+        data: {
+          ...data,
+          password: hashedPassword,
+          telefone: data.telefone,
+          role: data.role as Role,
+        },
       });
 
       delete user.password; // Remove a senha do retorno

@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseGuards,
@@ -12,14 +12,17 @@ import { ProductService } from './product.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard('jwt'))
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  create(@Body() createProductDto: Prisma.ProductCreateInput) {
-    return this.productService.create(createProductDto);
+  @UseGuards(AuthGuard('jwt'))
+  @Post('admin/:adminId')
+  create(
+    @Body() createProductDto: Prisma.ProductCreateInput,
+    @Param('adminId') adminId: string,
+  ) {
+    return this.productService.create(createProductDto, adminId);
   }
 
   @Get()
@@ -32,16 +35,19 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @Put('admin/:adminId/:id')
   update(
     @Param('id') id: string,
+    @Param('adminId') adminId: string,
     @Body() updateProductDto: Prisma.ProductUpdateInput,
   ) {
-    return this.productService.update(id, updateProductDto);
+    return this.productService.update(adminId, id, updateProductDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(id);
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('admin/:adminId/:id')
+  remove(@Param('id') id: string, @Param('adminId') adminId: string) {
+    return this.productService.remove(id, adminId);
   }
 }

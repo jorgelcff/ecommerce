@@ -44,4 +44,9 @@ export class CartController {
   remove(@Param('id') id: string) {
     return this.cartService.remove(id);
   }
+
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.cartService.findByUser(userId);
+  }
 }

@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+    provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -13,8 +14,8 @@ model User {
   name     String
   password String
   telefone String
-  // role     Role     @default(USER)
-  role     String     @default("USER")
+  role     Role     @default(USER)
+  // role     String     @default("USER")
   carts    Cart[]
   orders   Order[]
   messages Message[]
@@ -43,8 +44,8 @@ model Order {
   user      User            @relation(fields: [userId], references: [id])
   address   String
   total     Float
-  // status    OrderStatus      @default(PENDING)
-   status    String      @default("PENDING")
+  status    OrderStatus      @default(PENDING)
+  //  status    String      @default("PENDING")
   products  OrderProduct[]
   createdAt DateTime         @default(now())
 }
@@ -85,13 +86,13 @@ model Message {
   createdAt DateTime @default(now())
 }
 
-// enum OrderStatus {
-//   PENDING
-//   COMPLETED
-//   CANCELED
-// }
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+}
 
-// enum Role {
-//   ADMIN
-//   USER
-// }
+enum Role {
+  ADMIN
+  USER
+}
