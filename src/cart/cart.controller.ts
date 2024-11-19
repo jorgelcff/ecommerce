@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  BadRequestException,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { Prisma } from '@prisma/client';

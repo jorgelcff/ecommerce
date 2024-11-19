@@ -90,7 +90,7 @@ export class CartService {
           connect: { id: cart.id },
         },
         product: {
-          connect: { id: createCartProductDto.productId }, // Use productId diretamente
+          connect: { id: createCartProductDto.productId },
         },
       },
     });
@@ -115,10 +115,10 @@ export class CartService {
     const products = cart.products.map((cartProduct) => {
       return {
         product: {
-          connect: { id: cartProduct.productId }, // Conecte o produto pelo ID
+          connect: { id: cartProduct.productId },
         },
         quantity: cartProduct.quantity,
-        price: cartProduct.product.price, // Inclua o preço do produto aqui
+        price: cartProduct.product.price,
       };
     });
 
@@ -136,8 +136,8 @@ export class CartService {
         products: {
           create: orderProducts,
         },
-        address: address, // Passe o endereço diretamente como string
-        total: total, // Calculate the total amount here
+        address: address,
+        total: total,
       },
     });
 

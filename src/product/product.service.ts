@@ -28,7 +28,14 @@ export class ProductService {
     });
   }
 
-  async findAll() {
+  async findAll(categoriaId?: string) {
+    if (categoriaId) {
+      return await this.prisma.product.findMany({
+        where: {
+          categoryId: categoriaId,
+        },
+      });
+    }
     return await this.prisma.product.findMany();
   }
 
